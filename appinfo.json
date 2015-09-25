@@ -1,0 +1,23 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "scunderwood@gmail.com",
+    "longName": "Five O'Clock Somewhere",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "5somewhere",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "324815ad-e3ac-4727-bf15-3b2551943501",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
