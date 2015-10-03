@@ -1,9 +1,14 @@
 #include <pebble.h>
   
+#define KEY_TZ_OFFSET 0
+
+  
 static Window *s_main_window;
 static TextLayer *s_time_layer;
 static TextLayer *s_label_layer;
 static TextLayer *s_city_layer;
+
+static int s_timezone_offset;
 
 static char *std[] = {"London","Paris","Athens","Moscow","Abu Dhabi",
                          "Calcutta","Kathmandu","Bangkok","Singapore",
@@ -16,6 +21,15 @@ static char *dst[] = {"Liberia","London","Brussels","Saint-Petersburg","Abu Dhab
                          "Seoul","Melbourne","Srednekolymsk","Wake Island","Fakaofo",
                          "Honolulu","Alaska","Adamstown","San Francisco","Salt Lake City",
                          "Mexico City","New York","Buenos Aires","Sandwich Islands","Cabo Verde"};
+
+
+static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+  Tuple *t = dict_read_first(iterator);
+  s_timezone_offset = (int)t->value;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Received With Value: %d", s_timezone_offset);
+}
+
+
 
 static void update_time() {
   // Get a tm structure
@@ -107,6 +121,11 @@ static void init() {
   
   // Register with TickTimerService
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+  
+  // Register callback for JS
+  app_message_register_inbox_received(inbox_received_callback);
+  
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 }
 
 static void deinit() {
