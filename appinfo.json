@@ -1,5 +1,7 @@
 {
-    "appKeys": {},
+    "appKeys": {
+	"tzOffset":42
+    },
     "capabilities": [
         ""
     ],
@@ -18,6 +20,6 @@
     "uuid": "324815ad-e3ac-4727-bf15-3b2551943501",
     "versionLabel": "1.0",
     "watchapp": {
-        "watchface": false
+        "watchface": true
     }
 }

@@ -1,6 +1,6 @@
 #include <pebble.h>
   
-#define KEY_TZ_OFFSET 0
+#define KEY_TZ_OFFSET 42
 
   
 static Window *s_main_window;
@@ -8,7 +8,7 @@ static TextLayer *s_time_layer;
 static TextLayer *s_label_layer;
 static TextLayer *s_city_layer;
 
-static int s_timezone_offset;
+static int32_t s_timezone_offset = 0;
 
 static char *std[] = {"London","Paris","Athens","Moscow","Abu Dhabi",
                          "Calcutta","Kathmandu","Bangkok","Singapore",
@@ -24,9 +24,8 @@ static char *dst[] = {"Liberia","London","Brussels","Saint-Petersburg","Abu Dhab
 
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-  Tuple *t = dict_read_first(iterator);
-  s_timezone_offset = (int)t->value;
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "App Message Received With Value: %d", s_timezone_offset);
+  Tuple *t = dict_find(iterator, KEY_TZ_OFFSET);
+  s_timezone_offset = t->value->int32;
 }
 
 
@@ -35,8 +34,6 @@ static void update_time() {
   // Get a tm structure
   time_t temp = time(NULL); 
   struct tm *tick_time = localtime(&temp);
-  struct tm *utc_time = gmtime(&temp);
-
   // Create a long-lived buffer
   static char buffer[] = "00:00";
   // Write the current hours and minutes into the buffer
@@ -48,9 +45,11 @@ static void update_time() {
     strftime(buffer, sizeof("00:00"), "%I:%M", tick_time);
   }
 
-  int difference = 17 - (*utc_time).tm_hour;
-  int month = (*utc_time).tm_mon;
-  int day = (*utc_time).tm_mday;
+
+  int difference = 17 - ((*tick_time).tm_hour - s_timezone_offset);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Offset: %d", difference);
+  int month = (*tick_time).tm_mon;
+  int day = (*tick_time).tm_mday;
   bool is_dst = false;
   if((3<month&&month<10) || (month==3&&day>28) || (month==10&&day<25)){
     is_dst = true;
